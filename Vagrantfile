@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "hashicorp/trusty64"
+  config.vm.box = "ubuntu/trusty64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -23,6 +23,7 @@ Vagrant.configure(2) do |config|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 7000, host: 7000
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -61,11 +62,72 @@ Vagrant.configure(2) do |config|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
+  java_dir = "jdk1.8.0_45"
+  java_tar_file = "jdk-8u45-linux-x64.tar.gz"
+  java_home = "/home/vagrant/#{java_dir}"
+  jsuneido_home = "/vagrant/jsuneido"
+  database_home ="/home/vagrant"
+
+  config.vm.provision "set-up-profile", type: "shell", privileged: false, inline: <<-SHELL
+    echo Creating some useful aliases and environment variables.
+    echo Check .profile to see them.
+    sed --in-place \
+      -e '/export JAVA_HOME/d' \
+      -e '/alias jsuneido=/d' \
+      .profile
+    echo 'export JAVA_HOME=#{java_home}' >>.profile
+    echo 'alias jsuneido="cd #{database_home}; #{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar"' >>.profile
+  SHELL
+
+  config.vm.provision "java-install",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Downloading and installing Java
+      wget -nv -N  http://download.oracle.com/otn-pub/java/jdk/8u45-b14/#{java_tar_file} --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie"
+      tar -zxf #{java_tar_file}
+    SHELL
+
+  config.vm.provision "ant-install",
+    type: "shell",
+    inline: <<-SHELL
+      echo Installing Ant
+      apt-get update
+      apt-get -y install ant
+    SHELL
+
+  config.vm.provision "git-install",
+    type: "shell",
+    inline: <<-SHELL
+      echo Installing git
+      apt-get -y install git
+    SHELL
+
+  config.vm.provision "jSuneido-install",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Cloning jSuneido
+      cd /vagrant
+      git clone https://github.com/apmckinlay/jsuneido.git
+    SHELL
+
+  config.vm.provision "jSuneido-build",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Building jSuneido
+      cd #{jsuneido_home}
+      JAVA_HOME=#{java_home} ant compile
+    SHELL
+
+  config.vm.provision "suneido.js-install",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Cloning suneido.js
+      cd /vagrant
+      git clone https://github.com/apmckinlay/suneido.js.git
+    SHELL
+
 end
