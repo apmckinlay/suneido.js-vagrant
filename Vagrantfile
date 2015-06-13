@@ -76,7 +76,7 @@ Vagrant.configure(2) do |config|
       -e '/alias jsuneido=/d' \
       .profile
     echo 'export JAVA_HOME=#{java_home}' >>.profile
-    echo 'alias jsuneido="cd #{database_home}; #{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar"' >>.profile
+    echo 'alias jsuneido="(cd #{database_home}; #{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar)"' >>.profile
   SHELL
 
   config.vm.provision "java-install",
