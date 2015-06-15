@@ -140,9 +140,10 @@ Vagrant.configure(2) do |config|
     privileged: false,
     inline: <<-SHELL
       echo Enabling server start-up
-      sudo cp /vagrant/jsuneido.conf /etc/
-      mkdir -p /home/vagrant/bin
+      sudo cp /vagrant/jsuneido.conf /etc/init
+      mkdir -p /home/vagrant/bin /vagrant/log
       cp /vagrant/jsuneido.sh /home/vagrant/bin/jsuneido
+      cp /vagrant/jsuneido-stop.sh /home/vagrant/bin/jsuneido-stop
       cp /vagrant/jsuneido-load-stdlib.sh /home/vagrant/bin/jsuneido-load-stdlib
       chmod a+x /home/vagrant/bin/jsuneido*
     SHELL
@@ -152,6 +153,7 @@ Vagrant.configure(2) do |config|
     privileged: false,
     inline: <<-SHELL
       echo Loading stdlib
+      cp -a /vagrant/stdlib.su .
       jsuneido-load-stdlib
     SHELL
 
