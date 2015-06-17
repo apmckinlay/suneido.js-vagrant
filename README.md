@@ -15,7 +15,7 @@
 
 What happened when you ran the commands in step 3?
 
-1. You downloaded a "vagrantfile" from GitHub, which defines a virtual machine. This virtual machine runs an Ubuntu 14.04 server with no GUI. If you're not familiar with Linux, don't worry. Using this virtual machine requires little if no Linux experience
+1. You downloaded a "vagrantfile" from GitHub, which defines a virtual machine. This virtual machine runs an Ubuntu 14.04 server with no GUI. If you're not familiar with Linux, don't worry. Using this virtual machine requires little if any Linux experience
 2. `vagrant up` starts the virtual machine, which:
 
     1. If you're never run `vagrant up` for a Vagrant virtual machine using Ubuntu 14.04, downloads a whole VM Ubuntu 14.04 virtual machine, which takes a while
