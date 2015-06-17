@@ -70,18 +70,12 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "set-up-profile", type: "shell", privileged: false, inline: <<-SHELL
     echo Creating some useful aliases and environment variables.
-    echo Check .profile to see them.
-    sed --in-place \
-      -e '/export JAVA_HOME/d' \
-      -e '/export JSUNEIDO_HOME/d' \
-      -e '/export DATABASE_HOME/d' \
-      -e '/export SUNEIDOJS_HOME/d' \
-      -e '/alias jsuneido=/d' \
-      .profile
-    echo 'export JAVA_HOME=#{java_home}' >>.profile
-    echo 'export JSUNEIDO_HOME=#{jsuneido_home}' >>.profile
-    echo 'export DATABASE_HOME=#{database_home}' >>.profile
-    echo 'export SUNEIDOJS_HOME=/vagrant/suneido.js' >>.profile
+    echo Check ~/.jsuneido to see them.
+    grep '^. ~/.jsuneido$' || echo '. ~/.jsuneido' >>.profile
+    echo 'export JAVA_HOME=#{java_home}' >>.jsuneido
+    echo 'export JSUNEIDO_HOME=#{jsuneido_home}' >>.jsuneido
+    echo 'export DATABASE_HOME=#{database_home}' >>.jsuneido
+    echo 'export SUNEIDOJS_HOME=/vagrant/suneido.js' >>.jsuneido
   SHELL
 
   config.vm.provision "java-install",
@@ -112,9 +106,9 @@ Vagrant.configure(2) do |config|
     type: "shell",
     privileged: false,
     inline: <<-SHELL
-      echo Cloning jSuneido
+      echo "Cloning jSuneido if it doesn't exist"
       cd /vagrant
-      git clone https://github.com/apmckinlay/jsuneido.git
+      [ -d suneido.js ] || git clone https://github.com/apmckinlay/jsuneido.git
     SHELL
 
   config.vm.provision "jSuneido-build",
@@ -130,9 +124,9 @@ Vagrant.configure(2) do |config|
     type: "shell",
     privileged: false,
     inline: <<-SHELL
-      echo Cloning suneido.js
+      echo "Cloning suneido.js if it doesn't exist"
       cd /vagrant
-      git clone https://github.com/apmckinlay/suneido.js.git
+      [ -d suneido.js ] || git clone https://github.com/apmckinlay/suneido.js.git
     SHELL
 
   config.vm.provision "suneido-server-setup",
@@ -141,7 +135,7 @@ Vagrant.configure(2) do |config|
     inline: <<-SHELL
       echo Enabling server start-up
       sudo cp /vagrant/jsuneido.conf /etc/init
-      mkdir -p /home/vagrant/bin /vagrant/log
+      mkdir -p /home/vagrant/bin
       cp /vagrant/jsuneido.sh /home/vagrant/bin/jsuneido
       cp /vagrant/jsuneido-stop.sh /home/vagrant/bin/jsuneido-stop
       cp /vagrant/jsuneido-load-stdlib.sh /home/vagrant/bin/jsuneido-load-stdlib
@@ -157,4 +151,10 @@ Vagrant.configure(2) do |config|
       jsuneido-load-stdlib
     SHELL
 
+  config.vm.provision "suneido-server-start",
+    type: "shell",
+    inline: <<-SHELL
+      echo Starting suneido server
+      sudo start jsuneido
+    SHELL
 end
