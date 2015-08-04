@@ -53,3 +53,5 @@ There are a few convenience commands set up on the virtual machine:
 * `jsuneido` starts the Suneido server
 * `jsuneido-stop` stops the Suneido server
 * `jsuneido-load-stdlib` loads the Suneido standard library
+
+Run these via vagrant ssh
