@@ -117,7 +117,7 @@ Vagrant.configure(2) do |config|
     inline: <<-SHELL
       echo Building jSuneido
       cd #{jsuneido_home}
-      JAVA_HOME=#{java_home} ant compile
+      JAVA_HOME=#{java_home} ant target-jsuneido
     SHELL
 
   config.vm.provision "suneido.js-install",
