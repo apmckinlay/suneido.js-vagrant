@@ -102,6 +102,21 @@ Vagrant.configure(2) do |config|
       apt-get -y install git
     SHELL
 
+  config.vm.provision "nodejs-install",
+    type: "shell",
+    inline: <<-SHELL
+      echo Installing nodejs
+      apt-get -y install nodejs npm
+      ln -s /usr/bin/nodejs /usr/bin/node
+    SHELL
+
+  config.vm.provision "typescript-install",
+    type: "shell",
+    inline: <<-SHELL
+      echo Installing typescript
+      npm install -g typescript
+    SHELL
+
   config.vm.provision "jSuneido-install",
     type: "shell",
     privileged: false,
@@ -127,6 +142,15 @@ Vagrant.configure(2) do |config|
       echo "Cloning suneido.js if it doesn't exist"
       cd /vagrant
       [ -d suneido.js ] || git clone https://github.com/apmckinlay/suneido.js.git
+    SHELL
+
+  config.vm.provision "compile-typescript",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Compiling typescript
+      cd /vagrant/suneido.js
+      tsc -p .
     SHELL
 
   config.vm.provision "suneido-server-setup",
