@@ -150,7 +150,7 @@ Vagrant.configure(2) do |config|
     inline: <<-SHELL
       echo Compiling typescript
       cd /vagrant/suneido.js
-      tsc -p .
+      tsc --module amd -p .
     SHELL
 
   config.vm.provision "suneido-server-setup",
