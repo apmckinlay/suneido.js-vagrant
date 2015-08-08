@@ -1,6 +1,6 @@
 # Quick Start
 
-1. Install [VirtualBox](http://www.virtualbox.org/)
+1. Install [VirtualBox](http://www.virtualbox.org/) Note that at the moment the latest version of VirtualBox is 5.0, and it's not compatible with the virtualization tools of the Ubuntu base VM used for this image. Please use a 4.x version of VirtualBox if you can
 2. Install [Vagrant](https://docs.vagrantup.com/v2/installation/)
 3. Set up the Vagrant virtual machine
 
@@ -20,10 +20,11 @@ What happened when you ran the commands in step 3?
 
     1. If you're never run `vagrant up` for a Vagrant virtual machine using Ubuntu 14.04, downloads a whole VM Ubuntu 14.04 virtual machine, which takes a while
     2. Starts the virtual machine
-    3. Downloads the Java 8 SDK, git, and ant, which also takes a while
+    3. Downloads the Java 8 SDK, git, ant, node.js, and Typescript, which also takes a while
     4. Clones jSundeido from the GitHub repository
     5. Builds jSuneido
     6. Clones suneido.js from the GitHub repository
+    7. Compiles the typescript files
     7. Prepares start-up scripts to run the suneido.js server on boot and shut it down when the system is shut down
     8. Starts the suneido.js server
 
