@@ -67,6 +67,7 @@ Vagrant.configure(2) do |config|
   java_home = "/home/vagrant/#{java_dir}"
   jsuneido_home = "/vagrant/jsuneido"
   database_home ="/home/vagrant"
+  suneidojs_home = "/vagrant/suneido.js"
 
   config.vm.provision "set-up-profile", type: "shell", privileged: false, inline: <<-SHELL
     echo Creating some useful aliases and environment variables.
@@ -75,7 +76,7 @@ Vagrant.configure(2) do |config|
     echo 'export JAVA_HOME=#{java_home}' >>.jsuneido
     echo 'export JSUNEIDO_HOME=#{jsuneido_home}' >>.jsuneido
     echo 'export DATABASE_HOME=#{database_home}' >>.jsuneido
-    echo 'export SUNEIDOJS_HOME=/vagrant/suneido.js' >>.jsuneido
+    echo 'export SUNEIDOJS_HOME=#{suneidojs_home}' >>.jsuneido
   SHELL
 
   config.vm.provision "java-install",
@@ -122,8 +123,7 @@ Vagrant.configure(2) do |config|
     privileged: false,
     inline: <<-SHELL
       echo "Cloning jSuneido if it doesn't exist"
-      cd /vagrant
-      [ -d suneido.js ] || git clone https://github.com/apmckinlay/jsuneido.git
+      [ -d #{jsuneido_home} ] || git clone https://github.com/apmckinlay/jsuneido.git #{jsuneido_home}
     SHELL
 
   config.vm.provision "jSuneido-build",
@@ -140,8 +140,7 @@ Vagrant.configure(2) do |config|
     privileged: false,
     inline: <<-SHELL
       echo "Cloning suneido.js if it doesn't exist"
-      cd /vagrant
-      [ -d suneido.js ] || git clone https://github.com/apmckinlay/suneido.js.git
+      [ -d #{suneidojs_home} ] || git clone https://github.com/apmckinlay/suneido.js.git #{suneidojs_home}
     SHELL
 
   config.vm.provision "compile-typescript",
@@ -149,7 +148,7 @@ Vagrant.configure(2) do |config|
     privileged: false,
     inline: <<-SHELL
       echo Compiling typescript
-      cd /vagrant/suneido.js
+      cd #{suneidojs_home}
       tsc --module amd -p .
     SHELL
 
