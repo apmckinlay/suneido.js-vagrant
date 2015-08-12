@@ -159,9 +159,30 @@ Vagrant.configure(2) do |config|
       echo Enabling server start-up
       sudo cp /vagrant/jsuneido.conf /etc/init
       mkdir -p /home/vagrant/bin
-      cp /vagrant/jsuneido.sh /home/vagrant/bin/jsuneido
-      cp /vagrant/jsuneido-stop.sh /home/vagrant/bin/jsuneido-stop
-      cp /vagrant/jsuneido-load-stdlib.sh /home/vagrant/bin/jsuneido-load-stdlib
+      cat >/home/vagrant/bin/jsuneido <<SCRIPT
+#!/bin/bash
+
+cd #{database_home}
+#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar -server "JsPlayServer(dir: '#{suneidojs_home}', port: 7000, svcpass: 'sune1')"
+SCRIPT
+      cat >/home/vagrant/bin/jsuneido-stop <<SCRIPT
+#!/bin/bash
+
+cd #{database_home}
+#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar -client localhost "Shutdown(alsoServer:)"
+SCRIPT
+      cat >/home/vagrant/bin/jsuneido-load-stdlib <<SCRIPT
+#!/bin/bash
+
+cd $DATABASE_HOME
+#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar -load stdlib
+SCRIPT
+      cat >/home/vagrant/bin/jsuneido-update-stdlib <<SCRIPT
+#!/bin/bash
+
+cd $DATABASE_HOME
+#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar -load stdlib
+SCRIPT
       chmod a+x /home/vagrant/bin/jsuneido*
     SHELL
 
@@ -178,6 +199,15 @@ Vagrant.configure(2) do |config|
     type: "shell",
     inline: <<-SHELL
       echo Starting suneido server
-      sudo start jsuneido
+      start jsuneido
+    SHELL
+
+  config.vm.provision "suneido-stdlib-update",
+    type: "shell",
+    privileged: false,
+    inline: <<-SHELL
+      echo Updating stdlib.su
+      jsuneido-update-stdlib
+      sudo restart jsuneido
     SHELL
 end
