@@ -181,7 +181,7 @@ SCRIPT
 #!/bin/bash
 
 cd $DATABASE_HOME
-#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar -load stdlib
+curl --request POST http://localhost:7000/update
 SCRIPT
       chmod a+x /home/vagrant/bin/jsuneido*
     SHELL
@@ -208,6 +208,7 @@ SCRIPT
     inline: <<-SHELL
       echo Updating stdlib.su
       jsuneido-update-stdlib
-      sudo restart jsuneido
+      # sudo stop jsuneido
+      # sudo start jsuneido
     SHELL
 end
