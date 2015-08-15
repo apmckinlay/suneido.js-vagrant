@@ -180,8 +180,8 @@ SCRIPT
       cat >/home/vagrant/bin/jsuneido-update-stdlib <<SCRIPT
 #!/bin/bash
 
-cd $DATABASE_HOME
-curl --request POST http://localhost:7000/update
+cd #{database_home}
+#{java_home}/bin/java -jar #{jsuneido_home}/jsuneido.jar "JsUpdate('axon234.innovationplace.com', 'sune1')" </dev/null
 SCRIPT
       chmod a+x /home/vagrant/bin/jsuneido*
     SHELL
@@ -193,6 +193,8 @@ SCRIPT
       echo Loading stdlib
       cp -a /vagrant/stdlib.su .
       jsuneido-load-stdlib
+      echo Updating stdlib.su
+      jsuneido-update-stdlib
     SHELL
 
   config.vm.provision "suneido-server-start",
@@ -202,13 +204,13 @@ SCRIPT
       start jsuneido
     SHELL
 
-  config.vm.provision "suneido-stdlib-update",
-    type: "shell",
-    privileged: false,
-    inline: <<-SHELL
-      echo Updating stdlib.su
-      jsuneido-update-stdlib
-      # sudo stop jsuneido
-      # sudo start jsuneido
-    SHELL
+  # config.vm.provision "suneido-stdlib-update",
+  #   type: "shell",
+  #   privileged: false,
+  #   inline: <<-SHELL
+  #     echo Updating stdlib.su
+  #     jsuneido-update-stdlib
+  #     # sudo stop jsuneido
+  #     # sudo start jsuneido
+  #   SHELL
 end
